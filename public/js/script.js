@@ -17,7 +17,7 @@ function XHR()
 }
 function apiData(options)
 {
-   /* if (typeof options.data !== 'object') return;*/
+    if (!typeof options.data === 'object') return;
     let url = options.url || 'http://' + location.hostname + '/ajax/',
         type = options.type || 'POST',
         cType =	options.cType || 'application/x-www-form-urlencoded',
