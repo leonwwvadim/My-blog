@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Приветствую на моем блоге!{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="container main">
+        <div class="row">
+            <div class="col d-flex justify-content-center ">
+                <h1>MY BLOG</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="btn btn-outline-success" data-toggle="collapse" data-target="#newArticle" aria-expanded="false" aria-controls="collapseExample">Добавить статью</div>
+                <div class='collapse bg-light p-3 w-50 {{ form.vars.valid? '': 'd-block' }}' id='newArticle'>
+                    {{ form_start(form) }}
+
+                    <div class="col">
+                    {{ form_errors(form) }}
+                </div>
+                    <div class="form-group">
+                        {{ form_row(form.user) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_row(form.title) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_row(form.artText) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_row(form.tags) }}
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+            {% for article in articles %}
+        <div class="row py-4 w-75 mx-auto">
+            <div class="card w-100">
+                <div class="card-header">
+                    <div class="row justify-content-between">
+                        <span class="col-4">Автор: {{article.user.name}}</span>
+                    <span class="col-4 text-right">{{ article.dateCr|date('d/m/Y H:i') }}</span>
+                </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{article.title}}</h5>
+                    <p class="card-text">{{article.artText|slice(0, 300)}}{{ article.artText|length>300? ' . . .': ''}}</p>
+                    <a href="{{ path('article', {'id': article.id}) }}" class="btn btn-primary">Подробнее</a>
+                    <span class="close text-success"><i class="fas fa-comment"></i><small> Комментарии: {{ article.comments|length }}</small></span>
+                </div>
+            </div>
+        </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

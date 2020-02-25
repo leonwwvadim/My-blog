@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Статья автора {{ article.user.name }}!{% endblock %}
+
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="container">
+        <div class="row">
+            <div class="row justify-content-between mt-5 w-100">
+                <span class="col-4">
+                    <a href="{{ path('articles') }}" class="btn btn-outline-primary my-2">Все статьи</a>
+                </span>
+                <span class="col-4 text-right">
+                    <div class="dropdown">
+                      <button class="btn btn-outline-primary dropdown-toggle"
+                              type="button" id="dropdownMenu1" data-toggle="dropdown"
+                              aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-cog"></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <a class="dropdown-item" href="{{ path('edit_article',{'id': article.id}) }}">Редактировать</a>
+                          <button class="dropdown-item" data-toggle="modal" data-target="#exampleModal" >Удалить публикацию</button>
+                      </div>
+                    </div>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center mb-5 text-primary ">
+                <h1>{{ article.title }}</h1>
+            </div>
+
+        </div>
+        <div class="row justify-content-between mt-5 ">
+            <span class="col-4">
+                Автор статьи: {{article.user.name}}
+                <button data-toggle="modal" data-target="#mapidModal" style="color: blue" class="btn" location="{{ article.user.location.locY }}_{{ article.user.location.locX }}">
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
+            </span>
+            <span class="col-4 text-right">Дата публикации: {{ article.dateCr|date('d/m/Y H:i') }}</span>
+        </div>
+        <div class="row">
+            <div class="col-12 bg-light my-3"> Теги:
+                {% for tag in article.tags %}
+                    <a class="d-inline mx-1 " href="#">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row pb-4">
+            <div class="col font-italic " style="min-height: 12rem; font-size: 20px">{{article.artText}}</div>
+        </div>
+        <hr class="w-100">
+        <div class="row ">
+          <div class="col-12"><h5>Добавить коментарий:</h5></div></div>
+            <div class="row">
+            <div class="col-8 col-lg-4 py-4 ">
+                {{ form_start(form) }}
+
+
+                <div class="col">
+                    {{ form_errors(form) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(form.user) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(form.commentTxt) }}
+                </div>
+                {{ form_end(form) }}
+            </div>
+                <hr class="w-100">
+         </div>
+        <div class="col-12 py-3"><h5>Kоментарии:</h5></div>
+            {% for comment in article.comments %}
+            <div class="row py-2">
+                <div class="card border-secondary mb-3" style="max-width: 18rem;">
+                    <div class="card-header">{{ comment.createdAt|date('d/m/Y H:i') }}</div>
+                    <div class="card-body text-secondary">
+                        <h5 class="card-title">{{ comment.user.name }}</h5>
+                        <p class="card-text">{{ comment.commentTxt }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Удаление статьи</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Вы действительно желаете удалить данную статью?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary" id="removeArticle" article-id="{{ article.id }}">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="mapidModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Здесь живет автор статьи</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="mapid" style="height: 300px"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Выйти</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+ {% block javascripts %}
+     <script>
+         $('#removeArticle').click(removeArticleAlert);
+         $('button[location]').click(function () {
+             let loc = this.getAttribute('location').split('_');
+             locationMap(loc[0],loc[1]);
+         })
+     </script>
+ {% endblock %}
